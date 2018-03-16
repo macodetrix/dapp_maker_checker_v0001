@@ -1,9 +1,9 @@
 // contract to be tested
-var ChainList = artifacts.require("./ChainList.sol");
+var MakerChecker = artifacts.require("./MakerChecker.sol");
 
 // test suite
-contract("ChainList", function(accounts){
-  var chainListInstance;
+contract("MakerChecker", function(accounts){
+  var makerCheckerInstance;
   var seller = accounts[1];
   var buyer = accounts[2];
   var articleName = "article 1";
@@ -12,9 +12,9 @@ contract("ChainList", function(accounts){
 
   // no article for sale yet
   it("should throw an exception if you try to buy an article when there is no article for sale yet", function() {
-    return ChainList.deployed().then(function(instance) {
-      chainListInstance = instance;
-      return chainListInstance.buyArticle(1, {
+    return MakerChecker.deployed().then(function(instance) {
+      makerCheckerInstance = instance;
+      return makerCheckerInstance.buyArticle(1, {
         from: buyer,
         value: web3.toWei(articlePrice, "ether")
       });
@@ -22,7 +22,7 @@ contract("ChainList", function(accounts){
     .catch(function(error){
       assert(true);
     }).then(function() {
-      return chainListInstance.getNumberOfArticles();
+      return makerCheckerInstance.getNumberOfArticles();
     }).then(function(data) {
       assert.equal(data.toNumber(), 0, "number of articles must be 0");
     });
@@ -30,16 +30,16 @@ contract("ChainList", function(accounts){
 
   // buy an article that does not exist
   it("should throw an exception if you try to buy an article that does not exist", function(){
-    return ChainList.deployed().then(function(instance){
-      chainListInstance = instance;
-      return chainListInstance.sellArticle(articleName, articleDescription, web3.toWei(articlePrice, "ether"), { from: seller });
+    return MakerChecker.deployed().then(function(instance){
+      makerCheckerInstance = instance;
+      return makerCheckerInstance.sellArticle(articleName, articleDescription, web3.toWei(articlePrice, "ether"), { from: seller });
     }).then(function(receipt){
-      return chainListInstance.buyArticle(2, {from: seller, value: web3.toWei(articlePrice, "ether")});
+      return makerCheckerInstance.buyArticle(2, {from: seller, value: web3.toWei(articlePrice, "ether")});
     }).then(assert.fail)
     .catch(function(error) {
       assert(true);
     }).then(function() {
-      return chainListInstance.articles(1);
+      return makerCheckerInstance.articles(1);
     }).then(function(data) {
       assert.equal(data[0].toNumber(), 1, "article id must be 1");
       assert.equal(data[1], seller, "seller must be " + seller);
@@ -52,15 +52,15 @@ contract("ChainList", function(accounts){
 
   // buying an article you are selling
   it("should throw an exception if you try to buy your own article", function() {
-    return ChainList.deployed().then(function(instance){
-      chainListInstance = instance;
+    return MakerChecker.deployed().then(function(instance){
+      makerCheckerInstance = instance;
 
-      return chainListInstance.buyArticle(1, {from: seller, value: web3.toWei(articlePrice, "ether")});
+      return makerCheckerInstance.buyArticle(1, {from: seller, value: web3.toWei(articlePrice, "ether")});
     }).then(assert.fail)
     .catch(function(error){
       assert(true);
     }).then(function() {
-      return chainListInstance.articles(1);
+      return makerCheckerInstance.articles(1);
     }).then(function(data) {
       assert.equal(data[0].toNumber(), 1, "article id must be 1");
       assert.equal(data[1], seller, "seller must be " + seller);
@@ -73,14 +73,14 @@ contract("ChainList", function(accounts){
 
   // incorrect value
   it("should throw an exception if you try to buy an article for a value different from its price", function() {
-    return ChainList.deployed().then(function(instance){
-      chainListInstance = instance;
-      return chainListInstance.buyArticle(1, {from: buyer, value: web3.toWei(articlePrice + 1, "ether")});
+    return MakerChecker.deployed().then(function(instance){
+      makerCheckerInstance = instance;
+      return makerCheckerInstance.buyArticle(1, {from: buyer, value: web3.toWei(articlePrice + 1, "ether")});
     }).then(assert.fail)
     .catch(function(error){
       assert(true);
     }).then(function() {
-      return chainListInstance.articles(1);
+      return makerCheckerInstance.articles(1);
     }).then(function(data) {
       assert.equal(data[0].toNumber(), 1, "article id must be 1");
       assert.equal(data[1], seller, "seller must be " + seller);
@@ -93,16 +93,16 @@ contract("ChainList", function(accounts){
 
   // article has already been sold
   it("should throw an exception if you try to buy an article that has already been sold", function() {
-    return ChainList.deployed().then(function(instance){
-      chainListInstance = instance;
-      return chainListInstance.buyArticle(1, {from: buyer, value: web3.toWei(articlePrice, "ether")});
+    return MakerChecker.deployed().then(function(instance){
+      makerCheckerInstance = instance;
+      return makerCheckerInstance.buyArticle(1, {from: buyer, value: web3.toWei(articlePrice, "ether")});
     }).then(function(){
-      return chainListInstance.buyArticle(1, {from: web3.eth.accounts[0], value: web3.toWei(articlePrice, "ether")});
+      return makerCheckerInstance.buyArticle(1, {from: web3.eth.accounts[0], value: web3.toWei(articlePrice, "ether")});
     }).then(assert.fail)
     .catch(function(error){
       assert(true);
     }).then(function() {
-      return chainListInstance.articles(1);
+      return makerCheckerInstance.articles(1);
     }).then(function(data) {
       assert.equal(data[0].toNumber(), 1, "article id must be 1");
       assert.equal(data[1], seller, "seller must be " + seller);

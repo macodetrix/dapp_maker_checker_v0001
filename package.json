@@ -1,7 +1,7 @@
 {
-  "name": "ChainList",
+  "name": "MakerChecker",
   "version": "0.0.1",
-  "description": "",
+  "description": "a simple maker checker dapp",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -10,7 +10,7 @@
     "dev": "lite-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "ChainSkills",
+  "author": "macodetrix",
   "license": "ISC",
   "devDependencies": {
     "lite-server": "^2.3.0"

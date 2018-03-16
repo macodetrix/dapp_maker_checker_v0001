@@ -1,5 +1,5 @@
-var ChainList = artifacts.require("./ChainList.sol");
+var MakerChecker = artifacts.require("./MakerChecker.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(ChainList);
+  deployer.deploy(MakerChecker);
 }

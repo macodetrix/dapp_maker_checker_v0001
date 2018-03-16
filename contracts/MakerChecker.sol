@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Ownable.sol";
 
-contract ChainList is Ownable {
+contract MakerChecker is Ownable {
   // custom types
   struct Article {
     uint id;

@@ -39,11 +39,11 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('ChainList.json', function(chainListArtifact) {
+    $.getJSON('MakerChecker.json', function(makerCheckerArtifact) {
       // get the contract artifact file and use it to instantiate a truffle contract abstraction
-      App.contracts.ChainList = TruffleContract(chainListArtifact);
+      App.contracts.MakerChecker = TruffleContract(makerCheckerArtifact);
       // set the provider for our contracts
-      App.contracts.ChainList.setProvider(App.web3Provider);
+      App.contracts.MakerChecker.setProvider(App.web3Provider);
       // listen to events
       App.listenToEvents();
       // retrieve the article from the contract
@@ -61,18 +61,18 @@ App = {
     // refresh account information because the balance might have changed
     App.displayAccountInfo();
 
-    var chainListInstance;
+    var makerCheckerInstance;
 
-    App.contracts.ChainList.deployed().then(function(instance) {
-      chainListInstance = instance;
-      return chainListInstance.getArticlesForSale();
+    App.contracts.MakerChecker.deployed().then(function(instance) {
+      makerCheckerInstance = instance;
+      return makerCheckerInstance.getArticlesForSale();
     }).then(function(articleIds) {
       // retrieve the article placeholder and clear it
       $('#articlesRow').empty();
 
       for(var i = 0; i < articleIds.length; i++) {
         var articleId = articleIds[i];
-        chainListInstance.articles(articleId.toNumber()).then(function(article){
+        makerCheckerInstance.articles(articleId.toNumber()).then(function(article){
           App.displayArticle(article[0], article[1], article[3], article[4], article[5]);
         });
       }
@@ -119,7 +119,7 @@ App = {
       return false;
     }
 
-    App.contracts.ChainList.deployed().then(function(instance) {
+    App.contracts.MakerChecker.deployed().then(function(instance) {
       return instance.sellArticle(_article_name, _description, _price, {
         from: App.account,
         gas: 500000
@@ -133,7 +133,7 @@ App = {
 
   // listen to events triggered by the contract
   listenToEvents: function() {
-    App.contracts.ChainList.deployed().then(function(instance) {
+    App.contracts.MakerChecker.deployed().then(function(instance) {
       instance.LogSellArticle({}, {}).watch(function(error, event) {
         if (!error) {
           $("#events").append('<li class="list-group-item">' + event.args._name + ' is now for sale</li>');
@@ -161,7 +161,7 @@ App = {
     var _articleId = $(event.target).data('id');
     var _price = parseFloat($(event.target).data('value'));
 
-    App.contracts.ChainList.deployed().then(function(instance){
+    App.contracts.MakerChecker.deployed().then(function(instance){
       return instance.buyArticle(_articleId, {
         from: App.account,
         value: web3.toWei(_price, "ether"),
